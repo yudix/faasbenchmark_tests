@@ -2,9 +2,9 @@ package data;
 
 public class Result {
     public Integer id;
-    public Float invocationOverhead;
-    public Float duration;
-    public Float responseTime;
+    public Double invocationOverhead;
+    public Double duration;
+    public Double responseTime;
     public Boolean reused;
     public Boolean failed;
 

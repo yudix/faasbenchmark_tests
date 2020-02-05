@@ -1,22 +1,40 @@
 package testme;
 
 import com.google.gson.Gson;
-import data.ResultInvocationOverhead;
+import com.relevantcodes.extentreports.ExtentReports;
+import data.Function;
+import data.Result;
+import data.TestResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 import java.io.*;
+
+//import java.util.logging.Logger;
 
 public class RegressionTest {
 
     public static final String PROJECTS_FAASBENCHMARK = "/home/yudix/IdeaProjects/faasbenchmark";
+    static final Logger log = Logger.getLogger(RegressionTest.class);
 
     @Test
     public void testIncreasingCPULoadLvl1Regression() {
+//        Logger.getLogger()
         String previousResultsFilePath = "/home/yudix/IdeaProjects/faasbenchmark/old/results_20200204092216/IncreasingCPULoadLvl1/aws/result.json";
         String testName = "IncreasingCPULoadLvl1";
         runFaasbenchmark("aws", testName);
         String currentResultsFilePath = getLastFaasbenchmarkResultFilePath();
+        Assert.assertTrue(isInvocationOverheadIncrease(testName, currentResultsFilePath, previousResultsFilePath));
+    }
+
+    @Test
+    public void testIncreasingCPULoadLvl1Regression2() {
+        String previousResultsFilePath = "/home/yudix/IdeaProjects/faasbenchmark/old/results_20200204092216/IncreasingCPULoadLvl1/aws/result.json";
+        String testName = "IncreasingCPULoadLvl1";
+//        runFaasbenchmark("aws", testName);
+        String currentResultsFilePath = "/home/yudix/IdeaProjects/faasbenchmark/results_20200205220414/IncreasingCPULoadLvl1/aws/result.json";
+//                getLastFaasbenchmarkResultFilePath();
         Assert.assertTrue(isInvocationOverheadIncrease(testName, currentResultsFilePath, previousResultsFilePath));
     }
 
@@ -34,14 +52,29 @@ public class RegressionTest {
     }
 
     public boolean isInvocationOverheadIncrease(String testName, String previousResultsFilePath, String currentResultsFilePath) {
-        ResultInvocationOverhead previousResults = initResultInvocationOverhead(previousResultsFilePath);
-        ResultInvocationOverhead currentResults = initResultInvocationOverhead(currentResultsFilePath);
+        TestResult previousResults = initResultInvocationOverhead(previousResultsFilePath);
+        TestResult currentResults = initResultInvocationOverhead(currentResultsFilePath);
         Assert.assertTrue(isTestIsTheSame(testName, previousResults, currentResults));
-//        Assert.assertTrue(getMinInvocationOverhead(previousResults)<=getMinInvocationOverhead(currentResults));
+        Assert.assertTrue(compareMin(previousResults, currentResults));
 //        Assert.assertTrue(getMaxInvocationOverhead(previousResults)>=getMaxInvocationOverhead(currentResults));
 //        Assert.assertTrue(getAverageInvocationOverhead(previousResults)<=getAverageInvocationOverhead(currentResults));
 
         return true;
+    }
+
+    private boolean compareMin(TestResult previousResults, TestResult currentResults) {
+        boolean isCurrentMinGreaterThanPrevious = getMinInvocationOverhead(previousResults) <= getMinInvocationOverhead(currentResults);
+        return isCurrentMinGreaterThanPrevious;
+    }
+
+    private double getMinInvocationOverhead(TestResult results) {
+        double minOverhead = -1;
+        for (Function function : results.functions)
+            for (Result result : function.results)
+                minOverhead = minOverhead == -1 || result.invocationOverhead < minOverhead ? result.invocationOverhead : minOverhead;
+        System.out.println("on file: '"+results.filePath+"'");
+            System.out.println("min invocation overhead is: " + minOverhead);
+        return minOverhead;
     }
 
     private String executeAndGetResults(String command, String dirToRunFrom) {
@@ -86,15 +119,19 @@ public class RegressionTest {
         }
     }
 
-    private ResultInvocationOverhead initResultInvocationOverhead(String resultsFilePath) {
+    private TestResult initResultInvocationOverhead(String resultsFilePath) {
         try (Reader reader = new FileReader(resultsFilePath)) {
-            return new Gson().fromJson(reader, ResultInvocationOverhead.class);
+            TestResult testResult = new Gson().fromJson(reader, TestResult.class);
+            testResult.filePath = resultsFilePath;
+            return testResult;
         } catch (IOException e) {
             throw new RuntimeException("Cannot parse file " + resultsFilePath + "to ResultInvocationOverhead", e);
         }
     }
 
-    private boolean isTestIsTheSame(String testName, ResultInvocationOverhead previous, ResultInvocationOverhead current) {
+    private boolean isTestIsTheSame(String testName, TestResult previous, TestResult current) {
+        ExtentReports extentReports = new ExtentReports("");
+
         return previous.testName.equals(testName) && current.testName.equals(testName);
     }
 }

@@ -3,8 +3,9 @@ package data;
 
 import java.util.List;
 
-public class ResultInvocationOverhead {
+public class TestResult {
 
+    public String filePath;
     public String provider;
     public String testName;
     public String testDescription;
@@ -14,8 +15,9 @@ public class ResultInvocationOverhead {
 
     @Override
     public String toString() {
-        return "ResultInvocationOverhead{" +
-                "provider='" + provider + '\'' +
+        return "TestResult{" +
+                "filePath='" + filePath + '\'' +
+                ", provider='" + provider + '\'' +
                 ", testName='" + testName + '\'' +
                 ", testDescription='" + testDescription + '\'' +
                 ", stackDescription='" + stackDescription + '\'' +
