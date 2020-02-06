@@ -1,6 +1,7 @@
 
 package data;
 
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 public class TestResult {
@@ -11,7 +12,8 @@ public class TestResult {
     public String testDescription;
     public String stackDescription;
     public HttpConfig httpConfig;
-    public List<Function> functions = null;
+    public List<Function> functions;
+    public DoubleSummaryStatistics statistics;
 
     @Override
     public String toString() {
