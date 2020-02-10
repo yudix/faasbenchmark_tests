@@ -7,11 +7,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.DoubleSummaryStatistics;
+import java.util.Properties;
 
 public class FaasbenchmarkUtil {
+    private static final String PROJECT_FAASBENCHMARK_PATH_KEY = "PROJECT_FAASBENCHMARK_PATH";
     String dirToProjectFaasbenchmark;
-    public FaasbenchmarkUtil(String dirToProjectFaasbenchmark) {
-        this.dirToProjectFaasbenchmark = dirToProjectFaasbenchmark;
+
+    public FaasbenchmarkUtil(String propertyFilePath) {
+        Properties properties = PropUtil.loadProperties(propertyFilePath);
+        this.dirToProjectFaasbenchmark = properties.getProperty(PROJECT_FAASBENCHMARK_PATH_KEY);
+        CLIUtils.executeCommand("source " + propertyFilePath, System.getProperty("user.dir"));
     }
 
     public String getLastFaasbenchmarkResultFilePath() {

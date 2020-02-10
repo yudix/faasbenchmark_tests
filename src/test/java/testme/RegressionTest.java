@@ -1,16 +1,12 @@
 package testme;
 
-import com.google.gson.Gson;
 import data.TestResult;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import util.CLIUtils;
 import util.FaasbenchmarkUtil;
 import util.PropUtil;
 
-import java.io.*;
-import java.util.DoubleSummaryStatistics;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -19,8 +15,7 @@ public class RegressionTest {
 
     private static final Logger log = Logger.getLogger(RegressionTest.class.getName());
 
-    private static final String PROJECT_FAASBENCHMARK_PATH_KEY = "PROJECT_FAASBENCHMARK_PATH";
-    private static final String TEST_PROPERTIES = "src/main/resources/test.properties";
+    private static final String TEST_PROPERTIES = "test.properties";
     private static final String TEST_NAME_KEY = "TEST_NAME";
     private static final String COMPARABLE_RESULT_FILE_PATH_KEY = "COMPARABLE_RESULT_FILE_PATH";
     private static final String FRAMEWORK_KEY = "FRAMEWORK";
@@ -35,7 +30,7 @@ public class RegressionTest {
         Properties prop = PropUtil.loadProperties(TEST_PROPERTIES);
         String previousResultsFilePath = prop.getProperty(COMPARABLE_RESULT_FILE_PATH_KEY);
         this.testName = prop.getProperty(TEST_NAME_KEY);
-        this.faasbenchmarkUtil = new FaasbenchmarkUtil(prop.getProperty(PROJECT_FAASBENCHMARK_PATH_KEY));
+        this.faasbenchmarkUtil = new FaasbenchmarkUtil(TEST_PROPERTIES);
         this.faasbenchmarkUtil.runFaasbenchmark(prop.getProperty(FRAMEWORK_KEY), testName);
         String currentResultsFilePath = this.faasbenchmarkUtil.getLastFaasbenchmarkResultFilePath();
         this.previousResults = this.faasbenchmarkUtil.initTestResult(previousResultsFilePath);
