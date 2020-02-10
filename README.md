@@ -4,4 +4,5 @@ you need to edit the test.properties file with correct values
 
 java jdk 11; maven; (and all faasbenchmark depencdencies is needed)
 
-<p>[command to run from bash on project path]</p>: <b>mvn clean test -Dsurefire.suiteXmlFiles=testng.xml</b>
+<p>[command to run from bash on project path]</p>
+<b>mvn clean test -Dsurefire.suiteXmlFiles=testng.xml</b>
