@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 import util.FaasbenchmarkUtil;
 import util.PropUtil;
 
+import java.io.File;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -32,9 +33,20 @@ public class RegressionTest {
         this.testName = prop.getProperty(TEST_NAME_KEY);
         this.faasbenchmarkUtil = new FaasbenchmarkUtil(TEST_PROPERTIES);
         this.faasbenchmarkUtil.runFaasbenchmark(prop.getProperty(FRAMEWORK_KEY), testName);
-        String currentResultsFilePath = this.faasbenchmarkUtil.getLastFaasbenchmarkResultFilePath();
+        String currentResultsFilePath = this.faasbenchmarkUtil.getLastFaasbenchmarkResultFilePath().trim();
+        logFileStatus(currentResultsFilePath);
+        logFileStatus(previousResultsFilePath);
+        log.info("********Current file path = " + currentResultsFilePath);
+        log.info("********Comparable file path = " + previousResultsFilePath);
         this.previousResults = this.faasbenchmarkUtil.initTestResult(previousResultsFilePath);
-        this.currentResults = this.faasbenchmarkUtil.initTestResult(currentResultsFilePath);
+        this.currentResults = this.faasbenchmarkUtil.initTestResult(previousResultsFilePath);
+    }
+
+    private void logFileStatus(String filePath) {
+        log.info("is file " + filePath + " exists? = " + new File(filePath).exists());
+        log.info("is file " + filePath + " canRead? = " + new File(filePath).canRead());
+        log.info("is file " + filePath + " canWrite? = " + new File(filePath).canWrite());
+        log.info("is file " + filePath + " getAbsolutePath? = " + new File(filePath).getAbsolutePath());
     }
 
     @Test
